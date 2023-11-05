@@ -314,20 +314,13 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	if(GPIO_Pin == GPIO_PIN_13)
-	{
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	}
-}
 void ButtonMatrixRead()
 {
 	static uint8_t X=0;
 	for(int i=0; i<4; i++)
 	{
 		if(HAL_GPIO_ReadPin(BMX_L[i].Port, BMX_L[i].Pin) == GPIO_PIN_RESET)
-	{ //ปุ่มถู�?�?ด
+	{ //ปุ่มถู�?�?ด
 			ButtonState |= 1 << (i + (X * 4));
 	}
 		else
@@ -401,7 +394,17 @@ void CheckNumber()
 			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
 		}
 }
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == GPIO_PIN_10)
+	{
+		n = 0;
+		Num = 0;
+		memset(arr,0,sizeof(arr));
+		State = 0;
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_RESET);
+	}
+}
 /* USER CODE END 4 */
 
 /**
