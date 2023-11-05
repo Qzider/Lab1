@@ -60,8 +60,8 @@ all: main-build
 main-build: pad.elf secondary-outputs
 
 # Tool invocations
-pad.elf pad.map: $(OBJS) $(USER_OBJS) D:\GitHub\W2\STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "pad.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\GitHub\W2\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="pad.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+pad.elf pad.map: $(OBJS) $(USER_OBJS) D:\GitHub\W2\Pad\STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "pad.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\GitHub\W2\Pad\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="pad.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

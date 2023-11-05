@@ -66,7 +66,9 @@ struct _ButMtx_Struct BMX_R[4] = {
 uint16_t ButtonState = 0;
 uint16_t Num = 0;
 int arr[11];
-uint16_t n = 0;
+int n = 0;
+int ID[11] = {6,5,3,4,0,5,0,0,0,1,8};
+int State = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -130,6 +132,7 @@ int main(void)
 		  BTMX_TimeStamp = HAL_GetTick() + 25; //next scan in 25 ms
 		  ButtonMatrixRead();
 		  Numpad();
+		  CheckNumber();
 	  }
   }
   /* USER CODE END 3 */
@@ -246,7 +249,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LD2_Pin|GPIO_PIN_8, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10|GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
@@ -285,7 +288,14 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PA8 */
   GPIO_InitStruct.Pin = GPIO_PIN_8;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -294,6 +304,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -313,7 +327,7 @@ void ButtonMatrixRead()
 	for(int i=0; i<4; i++)
 	{
 		if(HAL_GPIO_ReadPin(BMX_L[i].Port, BMX_L[i].Pin) == GPIO_PIN_RESET)
-	{ //ปุ่มถูกกด
+	{ //ปุ่มถู�?�?ด
 			ButtonState |= 1 << (i + (X * 4));
 	}
 		else
@@ -364,6 +378,28 @@ void Numpad()
 			Num = 9;
 			break;
 	}
+}
+void CheckNumber()
+{
+	if(ButtonState != 0 && ButtonState != 128 && ButtonState != 2048 )
+	{
+		State = 1;
+	}
+	if(State == 1)
+	{
+		if(ButtonState == 0 )
+		{
+			if(n<11){
+				arr[n] = Num;
+				n++;
+				State = 0;
+			}
+		}
+	}
+	if(memcmp(arr,ID,sizeof(ID))== 0 && ButtonState == 2048)
+		{
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5,GPIO_PIN_SET);
+		}
 }
 
 /* USER CODE END 4 */
